@@ -16,7 +16,7 @@
         "width": 300,
         "height": 430,
         "minWidth": 220,
-        "minHeight": 200,
+        "minHeight": 136,
         "maxWidth": 320,
         "maxHeight": 460,
         "decorations": false,

@@ -33,8 +33,11 @@ export default function MiniWidget({
   const isStaff = question.type === 'staff';
 
   return (
-    <div className={`mini-widget ${isStaff ? 'mini-widget-staff' : 'mini-widget-mapping'}`}>
-      <div className="mini-header mini-header-drag" ref={dragRef}>
+    <div
+      className={`mini-widget ${isStaff ? 'mini-widget-staff' : 'mini-widget-mapping'}`}
+      ref={dragRef}
+    >
+      <div className="mini-chrome">
         <span className="mini-stat">{stats.correct}/{stats.total}</span>
         <div className="mini-actions">
           <button className="mini-btn" onClick={onToggleExpand} title="展开" aria-label="Expand">
@@ -62,23 +65,25 @@ export default function MiniWidget({
         </div>
       </div>
 
-      <div className={`mini-question ${isStaff ? 'mini-question-staff' : 'mini-question-mapping'}`}>
-        {isStaff ? (
-          <StaffQuestionView question={question} compact />
-        ) : (
-          <MappingQuestionView question={question} compact />
-        )}
-      </div>
+      <div className="mini-body">
+        <div className={`mini-question ${isStaff ? 'mini-question-staff' : 'mini-question-mapping'}`}>
+          {isStaff ? (
+            <StaffQuestionView question={question} compact />
+          ) : (
+            <MappingQuestionView question={question} compact />
+          )}
+        </div>
 
-      <OptionButtons
-        options={question.options}
-        correctIndex={question.correctIndex}
-        answerState={answerState}
-        selectedIndex={selectedIndex}
-        compact
-        onAnswer={onAnswer}
-        onSkipFeedback={onSkipFeedback}
-      />
+        <OptionButtons
+          options={question.options}
+          correctIndex={question.correctIndex}
+          answerState={answerState}
+          selectedIndex={selectedIndex}
+          compact
+          onAnswer={onAnswer}
+          onSkipFeedback={onSkipFeedback}
+        />
+      </div>
     </div>
   );
 }

@@ -9,8 +9,7 @@ import { DEFAULT_MAPPING_SETTINGS, DEFAULT_STAFF_SETTINGS } from './quiz/types';
 import './App.css';
 
 const NORMAL_SIZE = { width: 300, height: 430 };
-const MINI_SIZE_MAPPING = { width: 220, height: 200 };
-const MINI_SIZE_STAFF = { width: 220, height: 218 };
+const MINI_SIZE = { width: 288, height: 136 };
 const EXPANDED_STORAGE_KEY = 'quick-ms-expanded';
 const MODE_STORAGE_KEY = 'quick-ms-mode';
 const MAPPING_KIND_KEY = 'quick-ms-mapping-kind';
@@ -126,17 +125,13 @@ function App() {
 
   useEffect(() => {
     async function applySize() {
-      const size = isExpanded
-        ? NORMAL_SIZE
-        : mode === 'staff'
-          ? MINI_SIZE_STAFF
-          : MINI_SIZE_MAPPING;
+      const size = isExpanded ? NORMAL_SIZE : MINI_SIZE;
       await invoke('resize_window', { width: size.width, height: size.height });
       isFirstResize.current = false;
     }
 
     applySize().catch(() => {});
-  }, [isExpanded, mode]);
+  }, [isExpanded]);
 
   const toggleExpand = useCallback(() => {
     setIsExpanded((value) => {
