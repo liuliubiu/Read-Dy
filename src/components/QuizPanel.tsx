@@ -18,7 +18,6 @@ interface QuizPanelProps {
   mode: QuizMode;
   mappingSettings: MappingSettings;
   staffSettings: StaffSettings;
-  onModeChange: (mode: QuizMode) => void;
   onMappingSettingsChange: (settings: MappingSettings) => void;
   onStaffSettingsChange: (settings: StaffSettings) => void;
   question: Question;
@@ -33,7 +32,6 @@ export default function QuizPanel({
   mode,
   mappingSettings,
   staffSettings,
-  onModeChange,
   onMappingSettingsChange,
   onStaffSettingsChange,
   question,
@@ -57,27 +55,9 @@ export default function QuizPanel({
 
   return (
     <div className="quiz-panel">
-      <div className="mode-tabs">
-        <button
-          type="button"
-          className={`mode-tab ${mode === 'mapping' ? 'active' : ''}`}
-          onClick={() => onModeChange('mapping')}
-        >
-          映射
-        </button>
-        <button
-          type="button"
-          className={`mode-tab ${mode === 'staff' ? 'active' : ''}`}
-          onClick={() => onModeChange('staff')}
-        >
-          五线谱
-        </button>
-      </div>
-
-      {mode === 'mapping' && (
-        <div className="staff-settings">
-          <div className="staff-setting-row mapping-setting-row">
-            <span className="staff-setting-label">类型</span>
+      <div className="quiz-toolbar">
+        {mode === 'mapping' && (
+          <div className="segmented" role="group" aria-label="映射类型">
             {(
               [
                 ['letterSolfege', '音↔唱'],
@@ -89,55 +69,54 @@ export default function QuizPanel({
               <button
                 key={value}
                 type="button"
-                className={`staff-setting-btn ${mappingSettings.kind === value ? 'active' : ''}`}
+                className={`segmented-btn ${mappingSettings.kind === value ? 'active' : ''}`}
                 onClick={() => setMappingKind(value)}
               >
                 {label}
               </button>
             ))}
           </div>
-        </div>
-      )}
-
-      {mode === 'staff' && (
-        <div className="staff-settings">
-          <div className="staff-setting-row">
-            <span className="staff-setting-label">谱号</span>
-            {(['treble', 'bass', 'mixed'] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={`staff-setting-btn ${staffSettings.clef === value ? 'active' : ''}`}
-                onClick={() => setClef(value)}
-              >
-                {value === 'treble' ? '高音' : value === 'bass' ? '低音' : '混合'}
-              </button>
-            ))}
-          </div>
-          <div className="staff-setting-row">
-            <span className="staff-setting-label">选项</span>
-            {(['letter', 'solfege', 'mixed'] as const).map((value) => (
-              <button
-                key={value}
-                type="button"
-                className={`staff-setting-btn ${staffSettings.answerType === value ? 'active' : ''}`}
-                onClick={() => setAnswerType(value)}
-              >
-                {value === 'letter' ? '音名' : value === 'solfege' ? '唱名' : '混合'}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <StatsBar stats={stats} />
-
-      <div className="question-area">
-        {question.type === 'mapping' ? (
-          <MappingQuestionView question={question} />
-        ) : (
-          <StaffQuestionView question={question} />
         )}
+
+        {mode === 'staff' && (
+          <>
+            <div className="segmented" role="group" aria-label="谱号">
+              {(['treble', 'bass', 'mixed'] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`segmented-btn ${staffSettings.clef === value ? 'active' : ''}`}
+                  onClick={() => setClef(value)}
+                >
+                  {value === 'treble' ? '高音' : value === 'bass' ? '低音' : '混合'}
+                </button>
+              ))}
+            </div>
+            <div className="segmented" role="group" aria-label="作答方式">
+              {(['letter', 'solfege', 'mixed'] as const).map((value) => (
+                <button
+                  key={value}
+                  type="button"
+                  className={`segmented-btn ${staffSettings.answerType === value ? 'active' : ''}`}
+                  onClick={() => setAnswerType(value)}
+                >
+                  {value === 'letter' ? '音名' : value === 'solfege' ? '唱名' : '混合'}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className="question-card">
+        <StatsBar stats={stats} />
+        <div className="question-stage">
+          {question.type === 'mapping' ? (
+            <MappingQuestionView question={question} />
+          ) : (
+            <StaffQuestionView question={question} />
+          )}
+        </div>
       </div>
 
       <OptionButtons
@@ -149,7 +128,7 @@ export default function QuizPanel({
         onSkipFeedback={onSkipFeedback}
       />
 
-      <p className="keyboard-hint">1-4 选择 · 空格下一题 · Esc 老板键</p>
+      <p className="keyboard-hint">1–4 选择 · 空格下一题 · Esc 隐藏</p>
     </div>
   );
 }

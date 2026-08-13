@@ -1,8 +1,11 @@
 import { useWindowDrag } from '../hooks/useWindowDrag';
+import type { QuizMode } from '../quiz/types';
 
 interface WindowBarProps {
   isExpanded: boolean;
   isPinned: boolean;
+  mode: QuizMode;
+  onModeChange: (mode: QuizMode) => void;
   onToggleExpand: () => void;
   onTogglePin: () => void;
   onHide: () => void;
@@ -11,6 +14,8 @@ interface WindowBarProps {
 export default function WindowBar({
   isExpanded,
   isPinned,
+  mode,
+  onModeChange,
   onToggleExpand,
   onTogglePin,
   onHide,
@@ -20,7 +25,26 @@ export default function WindowBar({
   return (
     <div className="window-bar">
       <div className="window-bar-drag" ref={barRef}>
-        <span className="window-title">Ref</span>
+        <div className="segmented segmented-title" role="tablist" aria-label="练习模式">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'mapping'}
+            className={`segmented-btn ${mode === 'mapping' ? 'active' : ''}`}
+            onClick={() => onModeChange('mapping')}
+          >
+            映射
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={mode === 'staff'}
+            className={`segmented-btn ${mode === 'staff' ? 'active' : ''}`}
+            onClick={() => onModeChange('staff')}
+          >
+            五线谱
+          </button>
+        </div>
       </div>
       <div className="window-actions">
         <button

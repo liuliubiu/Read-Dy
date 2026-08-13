@@ -35,13 +35,11 @@ export default function StaffNotation({ pitch, clef, compact = false }: StaffNot
   const noteX = compact ? COMPACT_NOTE_X : NOTE_X;
   const clefX = compact ? 8 : 14;
   const bassDotX = compact ? 34 : 46;
-  const displayWidth = compact ? '100%' : 220;
-  const displayHeight = compact ? '100%' : 96;
 
   return (
     <svg
-      width={displayWidth}
-      height={displayHeight}
+      width="100%"
+      height="100%"
       viewBox={`0 0 ${viewWidth} ${VIEW_HEIGHT}`}
       className={`staff-notation ${compact ? 'staff-notation-compact' : ''}`}
       preserveAspectRatio="xMidYMid meet"

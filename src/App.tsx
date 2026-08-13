@@ -188,6 +188,8 @@ function App() {
           <WindowBar
             isExpanded={isExpanded}
             isPinned={isPinned}
+            mode={mode}
+            onModeChange={handleModeChange}
             onToggleExpand={toggleExpand}
             onTogglePin={togglePin}
             onHide={hideWindow}
@@ -196,7 +198,6 @@ function App() {
             mode={mode}
             mappingSettings={mappingSettings}
             staffSettings={staffSettings}
-            onModeChange={handleModeChange}
             onMappingSettingsChange={handleMappingSettingsChange}
             onStaffSettingsChange={handleStaffSettingsChange}
             question={question}

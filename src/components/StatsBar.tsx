@@ -10,10 +10,13 @@ export default function StatsBar({ stats, compact = false }: StatsBarProps) {
 
   return (
     <div className={`stats-bar ${compact ? 'stats-bar-compact' : ''}`}>
-      <span>{stats.correct}/{stats.total}</span>
-      <span>{accuracy}%</span>
-      <span>连 {stats.streak}</span>
-      {!compact && <span>最佳 {stats.bestStreak}</span>}
+      <span className="stat-item">
+        <span className="stat-value">{stats.correct}</span>
+        <span className="stat-muted">/{stats.total}</span>
+      </span>
+      <span className="stat-item">{accuracy}%</span>
+      <span className="stat-item">连 {stats.streak}</span>
+      {!compact && <span className="stat-item">最佳 {stats.bestStreak}</span>}
     </div>
   );
 }
