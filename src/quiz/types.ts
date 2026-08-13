@@ -1,6 +1,6 @@
 import type { ClefType, NotePitch } from '../music/notes';
 
-export type QuizMode = 'mapping' | 'staff';
+export type QuizMode = 'mapping' | 'staff' | 'interval';
 
 export type MappingDirection =
   | 'letterToSolfege'
@@ -34,6 +34,21 @@ export const DEFAULT_STAFF_SETTINGS: StaffSettings = {
   answerType: 'mixed',
 };
 
+export type IntervalDirection = 'up' | 'down' | 'mixed';
+
+export interface IntervalSettings {
+  clef: ClefSetting;
+  direction: IntervalDirection;
+}
+
+export const DEFAULT_INTERVAL_SETTINGS: IntervalSettings = {
+  clef: 'mixed',
+  direction: 'mixed',
+};
+
+/** 作答方式：四选一 / 键盘直答。纯 UI 层设置，不参与出题内容。 */
+export type AnswerMode = 'options' | 'direct';
+
 export interface BaseQuestion {
   id: string;
   options: string[];
@@ -53,7 +68,17 @@ export interface StaffQuestion extends BaseQuestion {
   answerType: StaffAnswerType;
 }
 
-export type Question = MappingQuestion | StaffQuestion;
+export interface IntervalQuestion extends BaseQuestion {
+  type: 'interval';
+  /** 左音符（上行时为低音，下行时为高音）。 */
+  first: NotePitch;
+  /** 右音符。 */
+  second: NotePitch;
+  clef: ClefType;
+  intervalName: string;
+}
+
+export type Question = MappingQuestion | StaffQuestion | IntervalQuestion;
 
 export interface QuizStats {
   correct: number;
@@ -68,4 +93,5 @@ export interface QuizConfig {
   mode: QuizMode;
   mappingSettings: MappingSettings;
   staffSettings: StaffSettings;
+  intervalSettings: IntervalSettings;
 }

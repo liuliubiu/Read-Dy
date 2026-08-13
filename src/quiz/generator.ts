@@ -1,4 +1,5 @@
 import {
+  INTERVAL_NAMES,
   LETTERS,
   NUMBERS,
   SOLFEGE,
@@ -19,6 +20,8 @@ import {
 } from '../music/notes';
 import type {
   ClefSetting,
+  IntervalDirection,
+  IntervalSettings,
   MappingDirection,
   MappingKind,
   MappingSettings,
@@ -127,6 +130,38 @@ function generateMappingQuestion(settings: MappingSettings): Question {
   return generateLetterSolfegeQuestion();
 }
 
+function resolveIntervalDirection(setting: IntervalDirection): 'up' | 'down' {
+  if (setting === 'mixed') {
+    return Math.random() < 0.5 ? 'up' : 'down';
+  }
+  return setting;
+}
+
+function generateIntervalQuestion(settings: IntervalSettings): Question {
+  const clef = resolveClef(settings.clef);
+  const direction = resolveIntervalDirection(settings.direction);
+  // 音域数组本身是从低到高的自然音序列，索引差即度数（1 = 二度 … 7 = 八度）。
+  const range = getStaffNoteRange(clef);
+  const distance = 1 + Math.floor(Math.random() * 7);
+  const maxFirstIndex = range.length - 1 - distance;
+  const firstIndex = Math.floor(Math.random() * (maxFirstIndex + 1));
+  const lower = range[firstIndex]!;
+  const upper = range[firstIndex + distance]!;
+  const correct = INTERVAL_NAMES[distance - 1]!;
+  const { options, correctIndex } = buildOptions(correct, INTERVAL_NAMES);
+
+  return {
+    id: nextId(),
+    type: 'interval',
+    first: direction === 'up' ? lower : upper,
+    second: direction === 'up' ? upper : lower,
+    clef,
+    intervalName: correct,
+    options,
+    correctIndex,
+  };
+}
+
 function generateStaffQuestion(staffSettings: StaffSettings): Question {
   const clef = resolveClef(staffSettings.clef);
   const answerType = resolveAnswerType(staffSettings.answerType);
@@ -162,6 +197,9 @@ function generateStaffQuestion(staffSettings: StaffSettings): Question {
 export function generateQuestion(config: QuizConfig): Question {
   if (config.mode === 'mapping') {
     return generateMappingQuestion(config.mappingSettings);
+  }
+  if (config.mode === 'interval') {
+    return generateIntervalQuestion(config.intervalSettings);
   }
   return generateStaffQuestion(config.staffSettings);
 }

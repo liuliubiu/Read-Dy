@@ -1,4 +1,5 @@
 import type { ClefType, NotePitch } from '../music/notes';
+import { pitchKey } from '../music/notes';
 import {
   getLedgerLineYs,
   getStaffY,
@@ -10,6 +11,8 @@ interface StaffNotationProps {
   pitch: NotePitch;
   clef: ClefType;
   compact?: boolean;
+  /** 传入第二个音时渲染双音符（音程训练用），两个符头在 X 方向错开避免二度重叠。 */
+  secondPitch?: NotePitch;
 }
 
 const VIEW_WIDTH = 200;
@@ -24,9 +27,12 @@ const COMPACT_NOTE_X = 94;
 const TREBLE_G_LINE_Y = STAFF_TOP_LINE_Y + STAFF_LINE_SPACING * 3;
 const BASS_F_LINE_Y = STAFF_TOP_LINE_Y + STAFF_LINE_SPACING;
 
-export default function StaffNotation({ pitch, clef, compact = false }: StaffNotationProps) {
-  const noteY = getStaffY(pitch, clef);
-  const ledgerYs = getLedgerLineYs(noteY, pitch, clef);
+export default function StaffNotation({
+  pitch,
+  clef,
+  compact = false,
+  secondPitch,
+}: StaffNotationProps) {
   const lines = Array.from({ length: 5 }, (_, index) => STAFF_TOP_LINE_Y + index * STAFF_LINE_SPACING);
 
   const viewWidth = compact ? COMPACT_VIEW_WIDTH : VIEW_WIDTH;
@@ -35,6 +41,14 @@ export default function StaffNotation({ pitch, clef, compact = false }: StaffNot
   const noteX = compact ? COMPACT_NOTE_X : NOTE_X;
   const clefX = compact ? 8 : 14;
   const bassDotX = compact ? 34 : 46;
+
+  const noteOffset = compact ? 10 : 14;
+  const notes = secondPitch
+    ? [
+        { pitch, x: noteX - noteOffset },
+        { pitch: secondPitch, x: noteX + noteOffset },
+      ]
+    : [{ pitch, x: noteX }];
 
   return (
     <svg
@@ -82,24 +96,31 @@ export default function StaffNotation({ pitch, clef, compact = false }: StaffNot
         </>
       )}
 
-      {ledgerYs.map((y) => (
-        <line
-          key={`ledger-${y}`}
-          x1={noteX - 12}
-          y1={y}
-          x2={noteX + 12}
-          y2={y}
-          className="staff-ledger"
+      {notes
+        .flatMap(({ pitch: p, x }) =>
+          getLedgerLineYs(getStaffY(p, clef), p, clef).map((y) => ({ x, y })),
+        )
+        .map(({ x, y }) => (
+          <line
+            key={`ledger-${x}-${y}`}
+            x1={x - 12}
+            y1={y}
+            x2={x + 12}
+            y2={y}
+            className="staff-ledger"
+          />
+        ))}
+
+      {notes.map(({ pitch: p, x }) => (
+        <ellipse
+          key={pitchKey(p)}
+          cx={x}
+          cy={getStaffY(p, clef)}
+          rx={compact ? 6.5 : 8}
+          ry={compact ? 5 : 6}
+          className="staff-note"
         />
       ))}
-
-      <ellipse
-        cx={noteX}
-        cy={noteY}
-        rx={compact ? 6.5 : 8}
-        ry={compact ? 5 : 6}
-        className="staff-note"
-      />
     </svg>
   );
 }

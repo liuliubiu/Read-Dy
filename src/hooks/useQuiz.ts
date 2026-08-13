@@ -58,19 +58,20 @@ export function useQuiz(config: QuizConfig) {
     config.mappingSettings.kind,
     config.staffSettings.clef,
     config.staffSettings.answerType,
+    config.intervalSettings.clef,
+    config.intervalSettings.direction,
     nextQuestion,
   ]);
 
   useEffect(() => () => clearTimer(), [clearTimer]);
 
-  const answer = useCallback(
-    (index: number) => {
+  const submitAnswer = useCallback(
+    (isCorrect: boolean, selected: number | null) => {
       if (answerState === 'answered') {
         return;
       }
 
-      const isCorrect = index === question.correctIndex;
-      setSelectedIndex(index);
+      setSelectedIndex(selected);
       setAnswerState('answered');
       setStats((prev) => {
         const streak = isCorrect ? prev.streak + 1 : 0;
@@ -90,7 +91,23 @@ export function useQuiz(config: QuizConfig) {
         nextQuestion();
       }, FEEDBACK_MS);
     },
-    [answerState, nextQuestion, question.correctIndex],
+    [answerState, nextQuestion],
+  );
+
+  const answer = useCallback(
+    (index: number) => {
+      submitAnswer(index === question.correctIndex, index);
+    },
+    [question.correctIndex, submitAnswer],
+  );
+
+  /** 直答模式：按按键对应的答案值判定，而非选项索引。 */
+  const answerValue = useCallback(
+    (value: string) => {
+      const correct = question.options[question.correctIndex];
+      submitAnswer(value === correct, question.options.indexOf(value));
+    },
+    [question, submitAnswer],
   );
 
   const skipFeedback = useCallback(() => {
@@ -105,6 +122,7 @@ export function useQuiz(config: QuizConfig) {
     selectedIndex,
     stats,
     answer,
+    answerValue,
     skipFeedback,
     nextQuestion,
   };

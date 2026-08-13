@@ -1,6 +1,8 @@
 export const LETTERS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'] as const;
 export const SOLFEGE = ['DO', 'RE', 'MI', 'FA', 'SOL', 'LA', 'SI'] as const;
 export const NUMBERS = ['1', '2', '3', '4', '5', '6', '7'] as const;
+/** Diatonic interval names, index i = i+1 度. */
+export const INTERVAL_NAMES = ['二度', '三度', '四度', '五度', '六度', '七度', '八度'] as const;
 
 export type LetterName = (typeof LETTERS)[number];
 export type SolfegeName = (typeof SOLFEGE)[number];

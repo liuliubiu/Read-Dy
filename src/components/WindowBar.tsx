@@ -26,24 +26,24 @@ export default function WindowBar({
     <div className="window-bar">
       <div className="window-bar-drag" ref={barRef}>
         <div className="segmented segmented-title" role="tablist" aria-label="练习模式">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'mapping'}
-            className={`segmented-btn ${mode === 'mapping' ? 'active' : ''}`}
-            onClick={() => onModeChange('mapping')}
-          >
-            映射
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'staff'}
-            className={`segmented-btn ${mode === 'staff' ? 'active' : ''}`}
-            onClick={() => onModeChange('staff')}
-          >
-            五线谱
-          </button>
+          {(
+            [
+              ['mapping', '映射'],
+              ['staff', '五线谱'],
+              ['interval', '音程'],
+            ] as const
+          ).map(([value, label]) => (
+            <button
+              key={value}
+              type="button"
+              role="tab"
+              aria-selected={mode === value}
+              className={`segmented-btn ${mode === value ? 'active' : ''}`}
+              onClick={() => onModeChange(value)}
+            >
+              {label}
+            </button>
+          ))}
         </div>
       </div>
       <div className="window-actions">

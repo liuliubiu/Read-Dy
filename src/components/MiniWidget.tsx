@@ -1,16 +1,20 @@
-import type { Question, QuizStats, AnswerState } from '../quiz/types';
+import type { AnswerMode, Question, QuizStats, AnswerState } from '../quiz/types';
 import { useWindowDrag } from '../hooks/useWindowDrag';
 import MappingQuestionView from './MappingQuestion';
 import StaffQuestionView from './StaffQuestion';
+import IntervalQuestionView from './IntervalQuestion';
 import OptionButtons from './OptionButtons';
+import DirectAnswer from './DirectAnswer';
 
 interface MiniWidgetProps {
   question: Question;
   stats: QuizStats;
   answerState: AnswerState;
   selectedIndex: number | null;
+  answerMode: AnswerMode;
   isPinned: boolean;
   onAnswer: (index: number) => void;
+  onAnswerValue: (value: string) => void;
   onSkipFeedback: () => void;
   onToggleExpand: () => void;
   onTogglePin: () => void;
@@ -22,15 +26,17 @@ export default function MiniWidget({
   stats,
   answerState,
   selectedIndex,
+  answerMode,
   isPinned,
   onAnswer,
+  onAnswerValue,
   onSkipFeedback,
   onToggleExpand,
   onTogglePin,
   onHide,
 }: MiniWidgetProps) {
   const dragRef = useWindowDrag<HTMLDivElement>();
-  const isStaff = question.type === 'staff';
+  const isStaff = question.type !== 'mapping';
 
   return (
     <div
@@ -67,22 +73,35 @@ export default function MiniWidget({
 
       <div className="mini-body">
         <div className={`mini-question ${isStaff ? 'mini-question-staff' : 'mini-question-mapping'}`}>
-          {isStaff ? (
-            <StaffQuestionView question={question} compact />
-          ) : (
+          {question.type === 'mapping' ? (
             <MappingQuestionView question={question} compact />
+          ) : question.type === 'interval' ? (
+            <IntervalQuestionView question={question} compact />
+          ) : (
+            <StaffQuestionView question={question} compact />
           )}
         </div>
 
-        <OptionButtons
-          options={question.options}
-          correctIndex={question.correctIndex}
-          answerState={answerState}
-          selectedIndex={selectedIndex}
-          compact
-          onAnswer={onAnswer}
-          onSkipFeedback={onSkipFeedback}
-        />
+        {answerMode === 'direct' && question.type !== 'interval' ? (
+          <DirectAnswer
+            question={question}
+            answerState={answerState}
+            selectedIndex={selectedIndex}
+            compact
+            onAnswerValue={onAnswerValue}
+            onSkipFeedback={onSkipFeedback}
+          />
+        ) : (
+          <OptionButtons
+            options={question.options}
+            correctIndex={question.correctIndex}
+            answerState={answerState}
+            selectedIndex={selectedIndex}
+            compact
+            onAnswer={onAnswer}
+            onSkipFeedback={onSkipFeedback}
+          />
+        )}
       </div>
     </div>
   );
