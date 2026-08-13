@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { generateQuestion } from '../quiz/generator';
+import { recordAnswer } from '../quiz/statStore';
 import type { AnswerState, Question, QuizConfig, QuizStats } from '../quiz/types';
 
 const FEEDBACK_MS = 400;
@@ -73,6 +74,7 @@ export function useQuiz(config: QuizConfig) {
 
       setSelectedIndex(selected);
       setAnswerState('answered');
+      recordAnswer(configRef.current.mode, isCorrect);
       setStats((prev) => {
         const streak = isCorrect ? prev.streak + 1 : 0;
         const bestStreak = Math.max(prev.bestStreak, streak);

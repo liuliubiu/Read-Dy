@@ -1,0 +1,12 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "desktop-only",
+  "description": "Desktop-only permissions: global shortcut plugin is not compiled on mobile targets",
+  "platforms": ["windows", "macOS", "linux"],
+  "windows": ["main"],
+  "permissions": [
+    "global-shortcut:allow-is-registered",
+    "global-shortcut:allow-register",
+    "global-shortcut:allow-unregister"
+  ]
+}

@@ -3,7 +3,9 @@ import { invoke } from '@tauri-apps/api/core';
 import WindowBar from './components/WindowBar';
 import QuizPanel from './components/QuizPanel';
 import MiniWidget from './components/MiniWidget';
+import AndroidApp from './components/android/AndroidApp';
 import { useQuiz } from './hooks/useQuiz';
+import { IS_ANDROID } from './platform';
 import type {
   AnswerMode,
   ClefSetting,
@@ -191,6 +193,10 @@ function App() {
 
   useEffect(() => {
     async function applySize() {
+      // 安卓端全屏，无窗口尺寸概念（构建期常量，安卓包中此调用被消除）。
+      if (IS_ANDROID) {
+        return;
+      }
       const size = isExpanded ? NORMAL_SIZE : MINI_SIZE;
       await invoke('resize_window', { width: size.width, height: size.height });
       isFirstResize.current = false;
@@ -200,6 +206,9 @@ function App() {
   }, [isExpanded]);
 
   const toggleExpand = useCallback(() => {
+    if (IS_ANDROID) {
+      return;
+    }
     setIsExpanded((value) => {
       const next = !value;
       persistExpandedPreference(next);
@@ -254,6 +263,30 @@ function App() {
   const handleAnswerModeChange = useCallback((nextMode: AnswerMode) => {
     setAnswerMode(nextMode);
   }, []);
+
+  if (IS_ANDROID) {
+    return (
+      <AndroidApp
+        mode={mode}
+        onModeChange={handleModeChange}
+        mappingSettings={mappingSettings}
+        staffSettings={staffSettings}
+        intervalSettings={intervalSettings}
+        answerMode={answerMode}
+        onMappingSettingsChange={handleMappingSettingsChange}
+        onStaffSettingsChange={handleStaffSettingsChange}
+        onIntervalSettingsChange={handleIntervalSettingsChange}
+        onAnswerModeChange={handleAnswerModeChange}
+        question={question}
+        stats={stats}
+        answerState={answerState}
+        selectedIndex={selectedIndex}
+        onAnswer={answer}
+        onAnswerValue={answerValue}
+        onSkipFeedback={skipFeedback}
+      />
+    );
+  }
 
   return (
     <div className={`app ${isExpanded ? 'app-normal' : 'app-mini'}`}>
